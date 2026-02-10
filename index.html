@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MGAHS Phil-IRI - Full Assessment (Filipino)</title>
+    <style>
+        :root {
+            --mgahs-maroon: #800000;
+            --mgahs-gold: #ffcc00;
+            --mgahs-text: #333333;
+            --input-border: #cccccc;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #landing-page {
+            width: 90%;
+            max-width: 850px;
+            background: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            overflow-y: auto;
+            max-height: 95vh;
+        }
+
+        .logo { width: 80px; margin-bottom: 5px; }
+        .school-name { color: var(--mgahs-maroon); font-size: 1.6rem; margin: 5px 0; font-weight: bold; }
+        
+        .test-tag { 
+            background: var(--mgahs-gold); 
+            display: inline-block; 
+            padding: 8px 30px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 0.7rem; font-weight: bold; color: #666; text-transform: uppercase; }
+        
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .btn-start-main {
+            grid-column: span 2;
+            background: var(--mgahs-maroon);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        #assessment-interface {
+            display: none;
+            width: 98vw;
+            height: 95vh;
+            max-width: 1400px;
+            background: white;
+            border-radius: 12px;
+            border-top: 10px solid var(--mgahs-maroon);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .app-layout { display: flex; height: 100%; }
+        
+        .reading-pane { 
+            flex: 0 0 65%; 
+            padding: 40px; 
+            overflow-y: auto; 
+            background: white;
+            border-right: 1px solid #ddd;
+        }
+
+        .controls-pane { 
+            flex: 0 0 35%; 
+            padding: 20px; 
+            background: #fafafa; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+
+        .story-title {
+            color: var(--mgahs-maroon);
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--mgahs-gold);
+            display: inline-block;
+        }
+
+        .story-text { 
+            font-size: 1.35rem; 
+            line-height: 2.3; 
+            color: #222; 
+            text-align: justify;
+        }
+
+        .word { display: inline-block; cursor: pointer; padding: 0 2px; border-radius: 4px; }
+        .word.marked { 
+            background: #ffeaa7; 
+            color: var(--mgahs-maroon); 
+            text-decoration: underline; 
+            font-weight: bold; 
+        }
+
+        .submit-section {
+            background: var(--mgahs-maroon);
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        #btn-start-reading {
+            width: 100%;
+            background: var(--mgahs-gold);
+            color: var(--mgahs-maroon);
+            padding: 20px;
+            border: none;
+            font-weight: bold;
+            font-size: 1.3rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .timer-display {
+            background: #333;
+            color: var(--mgahs-gold);
+            font-family: monospace;
+            font-size: 2.2rem;
+            padding: 10px;
+            border-bottom: 2px solid var(--mgahs-gold);
+        }
+
+        .btn-submit-test {
+            width: 100%;
+            background: var(--mgahs-gold);
+            color: var(--mgahs-maroon);
+            padding: 15px;
+            border: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .hidden { display: none !important; }
+
+        .miscue-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .miscue-btn {
+            background: white; border: 1px solid #ddd; padding: 14px; border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+            border-left: 6px solid var(--mgahs-maroon);
+        }
+        .m-label { font-size: 0.8rem; font-weight: bold; color: var(--mgahs-maroon); text-transform: uppercase; }
+        .m-count { background: var(--mgahs-maroon); color: var(--mgahs-gold); padding: 4px 14px; border-radius: 20px; font-weight: bold; font-size: 1.1rem; }
+
+        #summary-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 95%;
+            max-width: 650px;
+            border-radius: 10px;
+            padding: 30px;
+            border-top: 10px solid var(--mgahs-maroon);
+        }
+
+        .report-header { text-align: center; border-bottom: 2px solid var(--mgahs-gold); padding-bottom: 10px; margin-bottom: 20px; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .report-item { padding: 12px; background: #f9f9f9; border-radius: 5px; border-left: 3px solid var(--mgahs-gold); }
+        .report-label { font-weight: bold; color: var(--mgahs-maroon); display: block; font-size: 0.75rem; text-transform: uppercase; }
+        .report-val { font-size: 1.3rem; font-weight: bold; }
+
+        .profile-highlight {
+            grid-column: span 2;
+            background: var(--mgahs-maroon);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="landing-page">
+        <img src="AHS_LOGO.jpg" alt="Logo" class="logo">
+        <div class="school-name">MANUEL G. ARAULLO HIGH SCHOOL</div>
+        <div class="test-tag">PHIL-IRI POST TEST (FILIPINO)</div>
+        <div class="form-grid">
+            <div class="input-group"><label>LRN NO.</label><input type="text" id="lrn"></div>
+            <div class="input-group"><label>SURNAME</label><input type="text" id="surname"></div>
+            <div class="input-group"><label>FIRST NAME</label><input type="text" id="firstname"></div>
+            <div class="input-group" style="width: 80px;"><label>M.I.</label><input type="text" id="mi"></div>
+            <div class="input-group">
+                <label>GRADE LEVEL (STORY SELECTION)</label>
+                <select id="grade">
+                    <option value="7">Grade 7</option>
+                    <option value="8">Grade 8</option>
+                    <option value="9">Grade 9</option>
+                    <option value="10">Grade 10</option>
+                </select>
+            </div>
+            <div class="input-group"><label>SECTION</label><input type="text" id="section"></div>
+            <button class="btn-start-main" onclick="startAssessment()">START ASSESSMENT</button>
+        </div>
+    </div>
+
+    <div id="assessment-interface">
+        <div class="app-layout">
+            <div class="reading-pane">
+                <div id="story-title-display" class="story-title">STORY TITLE</div>
+                <div class="story-text" id="story-content"></div>
+            </div>
+
+            <div class="controls-pane">
+                <div class="submit-section">
+                    <button id="btn-start-reading" onclick="beginLiveTimer()">SIMULAN ANG PAGBASA</button>
+                    <div id="active-timer-controls" class="hidden">
+                        <div id="timer" class="timer-display">00:00</div>
+                        <button class="btn-submit-test" id="final-submit" onclick="submitToSheet()">I-SUBMIT</button>
+                    </div>
+                </div>
+
+                <div class="miscue-list">
+                    <div class="miscue-btn" onclick="inc('mis')"><span class="m-label">Mispronunciation</span><span class="m-count" id="mis">0</span></div>
+                    <div class="miscue-btn" onclick="inc('om')"><span class="m-label">Omission</span><span class="m-count" id="om">0</span></div>
+                    <div class="miscue-btn" onclick="inc('sub')"><span class="m-label">Substitution</span><span class="m-count" id="sub">0</span></div>
+                    <div class="miscue-btn" onclick="inc('ins')"><span class="m-label">Insertion</span><span class="m-count" id="ins">0</span></div>
+                    <div class="miscue-btn" onclick="inc('rep')"><span class="m-label">Repetition</span><span class="m-count" id="rep">0</span></div>
+                    <div class="miscue-btn" onclick="inc('trans')"><span class="m-label">Transposition</span><span class="m-count" id="trans">0</span></div>
+                    <div class="miscue-btn" onclick="inc('rev')"><span class="m-label">Reversal</span><span class="m-count" id="rev">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="summary-modal">
+        <div class="modal-content">
+            <div class="report-header">
+                <h2 style="color: var(--mgahs-maroon); margin: 0;">FINAL ASSESSMENT REPORT</h2>
+                <p id="rep-student-name" style="font-weight: bold; margin: 10px 0;"></p>
+            </div>
+            <div class="report-grid">
+                <div class="report-item"><span class="report-label">Oras ng Pagbasa</span><span id="rep-time" class="report-val">--</span></div>
+                <div class="report-item"><span class="report-label">Accuracy Rate</span><span id="rep-accuracy" class="report-val">--</span></div>
+                <div class="report-item"><span class="report-label">Kabuuang Miscues</span><span id="rep-miscues" class="report-val">--</span></div>
+                <div class="report-item"><span class="report-label">Bilang ng Salita</span><span id="rep-wordcount" class="report-val">--</span></div>
+                
+                <div class="profile-highlight">
+                    <span class="report-label" style="color: var(--mgahs-gold);">Reading Profile</span>
+                    <span id="rep-profile" style="font-size: 1.8rem; font-weight: bold;">--</span>
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button class="btn-start-main" style="width: auto; padding: 12px 40px;" onclick="location.reload()">MAGSIMULA MULI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwiBAm-qGoUjLeix4HotUb7JUxwTLVM6Mpv_ADY5M7kXDNfUeQ7H2YmzbKUo5KCXhSc/exec';
+
+        const storyDatabase = {
+            fil: {
+                "7": { wordCount: 127, title: "PALAG LANG", text: "Dito sa mundong ating ginagalawan, Palakasan na lang talaga ng loob ang labanan, Dahil mapag-iiwanan ka kung palagi mong pagduduhan ang iyong sariling kakayahan- Nang hindi mo pa naman sinusubukan. Walang pag-unlad kung palagi kang pangungunahan ng takot na mabigo. Hindi ka lalago kung ayaw mong makaranas ng pagkatalo. Hindi ka matututo kung ayaw mong masaktan- Sapagkat lahat naman ay proseso na kailangang pagdaanan. Maraming bagay ang kaya mong gawin. Tiwala sa sarili at pusong puno ng pag-asa ang dapat mong piliin. Lakasan mo lang ang iyong loob- Kusa naman ito sa'yong ipagkakaloob. Palag lang- Dahil lahat naman na mabuti ang hangarin at ipinaglalaban ay may patutunguhan." },
+                "8": { wordCount: 168, title: "SINO KA, TAO?", text: "(1) Tao'y puno ng lahat ng nilikha Nilagay kang bantay sa lahat ng Maylikha Ikaw na siyang una sa ibabaw na gawa Obra na hinusay sadyang kahanga-hanga. (2) Iyong dunong na taglay, pinagyaman, pinanday Bawat sagot sa tanong na maisip, ay tanglaw na gumabay Walang tigil sa paghukay sa kaalamang inaantabay Sa paglipad ng karunungan, tumalas at nagtempay. (3) Sa pagdaan ng panahon, pinagbuti ang pamumuno Mga bansa ay naipon, pamahalaa'y nangabuo Mga ordinansa'y hinabi, sanligang konstitusyon Batas ang bantayog ng pilosopiyang pantimon. (4) Subalit ang iyong kaisipan, umabusong lubha At sa iyong kapwa, ang ganti ay masama Karapatan ng bawat isa'y di mo alagata At ang karahasan, lumaganap na lubha. (5) Kaya ngayon ang luhog ko, sa iyo Oh! Tao, Balikan ang prinsipyong dapat mong isaulo Na ikaw ay marunong subalit dapat may puso Nang ang pagmamahal bumukal sa pagkatao." },
+                "9": { wordCount: 445, title: "DAING NG KALIKASAN", text: "(1) Hindi lingid sa ating kaalaman na ang mundo ngayon ay nakatindig sa kalagitnaan ng isang modernong panahon, punong-puno ng mga makabagong kaalaman sa teknolohiya, at kamalayan ukol sa bagong kultura- isang senyales ng nakikinitang malawakang pag-unlad sa larangan ng ekonomiya. Tila natatanaw na natin ang mundo kung saan may mga nagliliparang sasakyan, mga tao, at pagsiklab ng di-masahod na nakamamanghang mga imbensyon. Subalit, sa kabila ng ebolusyong ito, tayo pa rin ay naharap sa isang malaking katanungan- isang katanungan na marahil ay pupukaw sa ating mga puso't isipan: Ano ngayon? (2) Ano ngayon kung napakaunlad na ng ating mundo? Ano ngayon kung may mga imbensyon na susi umano sa pag-unlad ng pamumuhay ng mga tao? Ano ngayon kung bukas ang kamalayan ng bawat isa sa modernong pamumuhay kung sarado naman ang kanilang mga tainga sa mga daing ng Inang Kalikasan? (3) Hindi ko maunawaan kung bakit marami ang hindi nakapapansin o di kaya'y nagbibingi-bingihan o nagbubulag-bulagan sa mga pangyayaring nagaganap sa kasalukuyan. Ang mga kabundukan na dating tayuan ng ating tirahan, ay siya ngayong gumuguho, sumisira sa ating mga kabahayan. Ang mga ilog na nuon ay nagpasimula sa unang sibilisasyon ay siyang umaapaw, nagdudulot ng malawakang pagbaha, dahilan ng pagkasira ng mga ari-ariang pinaghirapan. Ang hangin na bumubuhay sa atin, ay siya ngayong tagapagdala ng mga nakamamatay na sakit na unti-unting umuubos sa sangkatauhan. Ang mga pangyayaring ito ay patunay na ang Inang Kalikasan ay patuloy na humahanap ng paraan kung paano matuturuan ng leksyon ang mga mapagmataas na mga tao. Nais niya tayong gisingin mula sa pagkahimbing sa banidad ng modernong buhay dahil tayong mga tao, isinasantabi ang realidad na siya ay nagkakaedad, nagpapakita ng mga sintomas na malubhang karamdaman-araw-araw. (4) Bawat segundo, isang parte ng mundong ating kinatatayuan ngayon ang nawawaldas, na maaaring umabot sa punto na hindi na nito kayang suportahan ang buhay na nakaasa lamang sa kanya. Huwag nawa nating hintayin ang panahon kung kailan kailangan pang pigain ang ating mga likas na yaman para lamang tustusan ang ating mga sinasabing \"pangangailangan\". Huwag na nating hintayin ang panahon kung kailan ang ating mundo ay bibiguin tayo gaya ng pagbigo natin sa kanya ngayon. Hindi pa naman huli ang lahat. Hindi na magagamot ang sugat ng ating kalikasan ng mga salita at pag-aalala, subalit, may paraan pa upang mapigilan ito. Ang tanging kailangan lamang ay ang bukas na kamalayan, kaagapay ang disiplina, pagkakaisa at aksyon. Hindi mahalaga ang mga modernong imbensyon, pag-unlad ng kultura at pag-unlad ng ekonomiya, sapagkat ang lahat ng ito ay walang saysay kung sa mundong kinatayuan, walang umaagapay." },
+                "10": { wordCount: 444, title: "NANG MAUNA ANG DAPAT MAHULI", text: "Pamilya ang siyang pinakamaliit na yunit ng lipunan. Maliit man, ito ang nagsisilbing pundasyon nang matatag na bansa. Pamilya rin ang nagsisilbing buklod ng anak sa magulang, magulang sa anak at asawa sa asawa. Umaga noon nang marinig ang hiyaw ni Mang Hector sa kaniyang silid. \"Ang sakit, ang sakit, sakit na!\" naluluhang sambit ni Mang Hector habang hawak ang kaniyang sumasakit na ulo. \"Hector!\" sambit naman ni Aling Lorena. Sa kaniyang pagkabigla, nabitawan niya ang picture ng kaniyang asawa dahilan para mabasag ang picture frame nito. Pupulutin niya sana ang mga nabasag na salamin, ngunit humiyaw muli ang kanyang asawa. Dali-dali niya itong pinuntahan sa kanilang kuwarto. Nilapitan ni Aling Lorena ang asawang namimilipit sa sakit ng ulo dulot ng tumor sa kaniyang utak. Wala siyang magawa, hindi niya alam kung paano maiibsan kahit saglit ang sakit na nararamdaman ng kaniyang kabiyak. Pinagmamasdan niya ang kaniyang asawa at hindi niya napansing lumuluha na siya. \"D'yan ka lang muna Hector, bibilhin ko ang nireseta ni Dok Ramos na pangwala ng kirot,\" sabi ni Aling Lorena. Wala namang kibo si Mang Hector. Hawak pa rin ang ulo. Wari'y gustong iuntog ang kaniyang ulo sa matigas na bagay para maibsan ang nararamdamang sakit. Nakabili ng dalawang tableta si Aling Lorena. Kulang ang mga iyon, ngunit iyon na lamang ang nagkasya sa natitira niyang pera. Sa kaniyang pagtawid, isang truck ang nakasagasa sa isang babae. Hindi na iyon inintindi ni Aling Lorena. Hindi na siya nakisali sa mga taong tumitingin sa nasagasaang babae. \"Hector!\" bati niya. \"Ito na ang gamot, uminom ka na nang maibsan ang sakit ng ulo mo,\" dagdag pa niya. Isang buwan na lang daw ang itatagal ng buhay ni Mang Hector ayon kay Dok Ramos, lalo na kung hindi ito magpapagamot dahil malubha na ang tumor sa kaniyang utak. Dalawa lamang sila magkasama sa buhay, walang sapat na pera sa sinasabing operasyon, kaya naman tanging mga pain killer lang ang nagsisilbing gamot ni Mang Hector. \"Mang Hector!\" hingal na sabi ni Mario, kapitbahay ng mag-asawa. \"Mang Hector, si Aling Lorena, nagsagasaan ng truck, dinala naman siya sa ospital, pero dead-on-arrival na raw,\" pautal-utal na kuwento ng lalaki. Hindi makapaniwala si Mang Hector sa masamang balita sa kaniya ni Mario. Tinitigan na lamang niya ang nasa kaniyang harapan. Muling hinawakan ang ulo. Wari'y sumasakit muli ito. Sa mga oras na iyon, iniuuntog na niya ang kaniyang ulo sa dingding ng kanilang kwarto. Lumuluha si Mang Hector." }
+            }
+        };
+
+        let counts = { mis:0, om:0, sub:0, ins:0, rep:0, trans:0, rev:0 };
+        let timerInterval, seconds = 0, currentWordCount = 0;
+
+        function startAssessment() {
+            document.getElementById('btn-start-reading').classList.remove('hidden');
+            document.getElementById('active-timer-controls').classList.add('hidden');
+            document.getElementById('timer').innerText = "00:00";
+            seconds = 0;
+            Object.keys(counts).forEach(k => { counts[k] = 0; document.getElementById(k).innerText = "0"; });
+
+            const grade = document.getElementById('grade').value;
+            const data = storyDatabase['fil'][grade];
+            currentWordCount = data.wordCount;
+            document.getElementById('story-title-display').innerText = data.title;
+            
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('assessment-interface').style.display = 'block';
+            
+            const container = document.getElementById('story-content');
+            container.innerHTML = '';
+            data.text.split(' ').forEach(word => {
+                const span = document.createElement('span');
+                span.className = 'word';
+                span.innerText = word + ' ';
+                span.onclick = () => span.classList.toggle('marked');
+                container.appendChild(span);
+            });
+        }
+
+        function beginLiveTimer() {
+            document.getElementById('btn-start-reading').classList.add('hidden');
+            document.getElementById('active-timer-controls').classList.remove('hidden');
+            timerInterval = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function inc(id) {
+            counts[id]++;
+            document.getElementById(id).innerText = counts[id];
+        }
+
+        function submitToSheet() {
+            clearInterval(timerInterval);
+            const btn = document.getElementById('final-submit');
+            btn.innerText = "SINESEYB...";
+            btn.disabled = true;
+
+            const totalMiscues = Object.values(counts).reduce((a, b) => a + b, 0);
+            const accuracy = (((currentWordCount - totalMiscues) / currentWordCount) * 100).toFixed(1);
+            let profile = accuracy >= 97 ? "Independent" : accuracy >= 90 ? "Instructional" : "Frustration";
+
+            const fullName = `${document.getElementById('surname').value}, ${document.getElementById('firstname').value} ${document.getElementById('mi').value}`;
+
+            const formData = new URLSearchParams();
+            formData.append('LRN', document.getElementById('lrn').value);
+            formData.append('Name', fullName);
+            formData.append('Grade', document.getElementById('grade').value);
+            formData.append('Section', document.getElementById('section').value);
+            formData.append('Story', document.getElementById('story-title-display').innerText);
+            formData.append('Time', document.getElementById('timer').innerText);
+            formData.append('Miscues', totalMiscues);
+            formData.append('Accuracy', accuracy + "%");
+            formData.append('Profile', profile);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(response => {
+                    showSummary(totalMiscues, accuracy, profile);
+                })
+                .catch(error => {
+                    alert('Error saving to sheet: ' + error);
+                    showSummary(totalMiscues, accuracy, profile);
+                });
+        }
+
+        function showSummary(totalMiscues, accuracy, profile) {
+            document.getElementById('rep-student-name').innerText = 
+                `${document.getElementById('firstname').value} ${document.getElementById('mi').value} ${document.getElementById('surname').value} (Baitang ${document.getElementById('grade').value})`;
+            
+            document.getElementById('rep-time').innerText = document.getElementById('timer').innerText;
+            document.getElementById('rep-accuracy').innerText = accuracy + "%";
+            document.getElementById('rep-miscues').innerText = totalMiscues;
+            document.getElementById('rep-wordcount').innerText = currentWordCount;
+            document.getElementById('rep-profile').innerText = profile + " Level";
+            
+            document.getElementById('summary-modal').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
